@@ -41,6 +41,11 @@ export const emailService = {
   async getTemplates() {
     const response = await api.get('/email/templates')
     return response
+  },
+
+  async sendEmail(emailId, receiverEmail) {
+    const response = await api.post(`/email/send/${emailId}`, { receiverEmail })
+    return response
   }
 }
 

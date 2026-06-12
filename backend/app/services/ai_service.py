@@ -8,13 +8,21 @@ class AIService:
     def __init__(self):
         api_key = os.getenv('GEMINI_API_KEY')
         if api_key and api_key != 'your_gemini_api_key_here':
-            genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
-            self.enabled = True
+            try:
+                genai.configure(api_key=api_key)
+                # Use Gemini 2.5 Flash - the latest stable fast model
+                self.model = genai.GenerativeModel('gemini-2.5-flash')
+                self.enabled = True
+                print("✓ Gemini 2.5 Flash AI configured successfully")
+            except Exception as e:
+                self.model = None
+                self.enabled = False
+                print(f"✗ Gemini API configuration failed: {e}")
+                print("Using fallback responses for AI features")
         else:
             self.model = None
             self.enabled = False
-            print("Warning: GEMINI_API_KEY not configured. AI features will use fallback responses.")
+            print("⚠ GEMINI_API_KEY not properly configured. Using fallback responses.")
     
     def generate_email(
         self,
@@ -74,7 +82,8 @@ class AIService:
             
         except Exception as e:
             print(f"Gemini API Error: {e}")
-            return f"I apologize, but I encountered an error. Please try again or rephrase your question."
+            # Return fallback response instead of error message
+            return self._get_fallback_chat_response(message)
     
     def _build_profile_context(self, profile_data: Dict[str, Any]) -> str:
         """Build context string from profile data"""
@@ -106,13 +115,13 @@ class AIService:
         """Build prompt for email generation"""
         
         type_instructions = {
-            'recruitment': 'Write a recruitment email inviting the candidate to apply for a position.',
-            'internship': 'Write an email offering an internship opportunity.',
-            'networking': 'Write a professional networking email to connect.',
-            'marketing': 'Write a marketing email promoting a product or service.',
-            'referral': 'Write an email requesting a job referral.',
-            'business': 'Write a business collaboration proposal email.',
-            'followup': 'Write a follow-up email for a previous conversation.'
+            'recruitment': 'Write a professional email from a job candidate expressing interest in a position and requesting an interview or more information.',
+            'internship': 'Write an email from a student/candidate requesting an internship opportunity.',
+            'networking': 'Write a professional networking email from the candidate to connect with someone at a company.',
+            'marketing': 'Write a professional email showcasing the candidate\'s skills and value proposition.',
+            'referral': 'Write an email from the candidate requesting a job referral or introduction.',
+            'business': 'Write a business inquiry or collaboration email from the candidate.',
+            'followup': 'Write a follow-up email from the candidate after applying or interviewing.'
         }
         
         tone_instructions = {
@@ -121,22 +130,31 @@ class AIService:
             'formal': 'Use a very formal and business-like tone.'
         }
         
+        recipient_name = metadata.get('recipientName', 'Hiring Manager') if metadata else 'Hiring Manager'
+        company = metadata.get('company', 'your company') if metadata else 'your company'
+        position = metadata.get('position', 'the position') if metadata else 'the position'
+        
         prompt = f"{type_instructions.get(email_type, 'Write a professional email.')}\n\n"
         prompt += f"{tone_instructions.get(tone, 'Use a professional tone.')}\n\n"
-        prompt += f"Profile Information:\n{context}\n\n"
         
-        if metadata:
-            company = metadata.get('company', '')
-            position = metadata.get('position', '')
-            if company:
-                prompt += f"Company: {company}\n"
-            if position:
-                prompt += f"Position: {position}\n"
+        # Make it clear the email is FROM the candidate TO the HR/company
+        prompt += "This email should be FROM the candidate TO a recruiter/HR/hiring manager.\n\n"
+        prompt += f"Candidate's Profile Information (the email sender):\n{context}\n\n"
+        
+        if company:
+            prompt += f"Target Company/Organization: {company}\n"
+        if position:
+            prompt += f"Target Position/Role: {position}\n"
+        if recipient_name:
+            prompt += f"Recipient (HR/Hiring Manager): {recipient_name}\n"
         
         if custom_prompt:
             prompt += f"\nAdditional Instructions: {custom_prompt}\n"
         
-        prompt += "\nGenerate a professional email with subject line and body. Format EXACTLY as:\nSubject: [subject line here]\n\n[email body here]"
+        prompt += "\nGenerate a professional email with subject line and body."
+        prompt += f"\nThe email should be from the candidate (name from profile) introducing themselves and expressing interest in {position} at {company}."
+        prompt += f"\nAddress the recipient as '{recipient_name}'."
+        prompt += "\nFormat EXACTLY as:\nSubject: [subject line here]\n\n[email body here]"
         
         return prompt
     
@@ -174,30 +192,43 @@ class AIService:
     ) -> Dict[str, str]:
         """Generate fallback email when AI is not available"""
         
-        name = profile_data.get('fullName', 'there')
-        company = metadata.get('company', 'our company') if metadata else 'our company'
-        position = metadata.get('position', 'a position') if metadata else 'a position'
+        # Candidate information (person sending the email)
+        candidate_name = profile_data.get('fullName', 'Candidate')
+        candidate_headline = profile_data.get('headline', 'Professional')
+        
+        # Target company/recipient information
+        company = metadata.get('company', 'your company') if metadata else 'your company'
+        position = metadata.get('position', 'the available position') if metadata else 'the available position'
+        recipient_name = metadata.get('recipientName', 'Hiring Manager') if metadata else 'Hiring Manager'
         
         templates = {
             'recruitment': {
-                'subject': f"Exciting Opportunity at {company}",
-                'body': f"Dear {name},\n\nI came across your impressive profile and believe you would be a great fit for {position} at {company}.\n\nWe are looking for talented professionals like you to join our team. Your skills and experience align perfectly with what we're looking for.\n\nWould you be interested in discussing this opportunity further?\n\nBest regards"
+                'subject': f"Application for {position} at {company}",
+                'body': f"Dear {recipient_name},\n\nI hope this email finds you well. My name is {candidate_name}, and I am a {candidate_headline}.\n\nI am writing to express my strong interest in the {position} role at {company}. With my background and skills, I believe I would be a valuable addition to your team.\n\nI would welcome the opportunity to discuss how my experience aligns with your needs. I have attached my resume for your review and would be happy to provide any additional information.\n\nThank you for considering my application. I look forward to hearing from you.\n\nBest regards,\n{candidate_name}"
             },
             'internship': {
-                'subject': f"Internship Opportunity at {company}",
-                'body': f"Hi {name},\n\nWe have an exciting internship opportunity at {company} that matches your profile perfectly.\n\nThis role will give you hands-on experience and help develop your skills in a professional environment.\n\nWould you like to learn more?\n\nBest regards"
+                'subject': f"Internship Application - {position} at {company}",
+                'body': f"Dear {recipient_name},\n\nMy name is {candidate_name}, currently a {candidate_headline}. I am reaching out to express my interest in internship opportunities at {company}, particularly in {position}.\n\nI am eager to gain practical experience and contribute to your team while developing my skills in a professional environment. I am confident that my background and enthusiasm make me a strong candidate.\n\nI would appreciate the opportunity to discuss potential internship openings. Please find my resume attached.\n\nThank you for your time and consideration.\n\nBest regards,\n{candidate_name}"
             },
             'networking': {
-                'subject': f"Let's Connect - {name}",
-                'body': f"Hi {name},\n\nI was impressed by your professional background and would love to connect with you.\n\nI believe we could benefit from sharing insights and experiences in our field.\n\nLooking forward to connecting!\n\nBest regards"
+                'subject': f"Professional Connection - {candidate_name}",
+                'body': f"Dear {recipient_name},\n\nI hope this message finds you well. My name is {candidate_name}, and I am a {candidate_headline}.\n\nI came across {company} and was impressed by the work you're doing. I would love to connect and learn more about your organization and explore potential opportunities for collaboration.\n\nWould you be available for a brief conversation? I'd be happy to work around your schedule.\n\nThank you for considering my request.\n\nBest regards,\n{candidate_name}"
             },
             'marketing': {
-                'subject': f"Exclusive Opportunity for {name}",
-                'body': f"Dear {name},\n\nBased on your profile, I wanted to share an exclusive opportunity that aligns with your interests.\n\nWe believe this could be valuable for your professional growth.\n\nLet me know if you'd like to learn more!\n\nBest regards"
+                'subject': f"Introduction - {candidate_name}, {candidate_headline}",
+                'body': f"Dear {recipient_name},\n\nI'm {candidate_name}, a {candidate_headline} with a passion for delivering exceptional results.\n\nI wanted to reach out to introduce myself and explore how my skills and experience could benefit {company}. I believe my background aligns well with the work your team does.\n\nI would welcome the opportunity to discuss how I can contribute to your organization's success.\n\nThank you for your time.\n\nBest regards,\n{candidate_name}"
+            },
+            'referral': {
+                'subject': f"Referral Request - {position} at {company}",
+                'body': f"Dear {recipient_name},\n\nI hope you're doing well. My name is {candidate_name}, and I am a {candidate_headline}.\n\nI'm reaching out because I'm very interested in the {position} role at {company}. Given your connection to the organization, I was hoping you might be willing to provide a referral or introduction.\n\nI believe my skills and experience would be a great fit, and I would greatly appreciate any support you could provide.\n\nThank you for considering my request.\n\nBest regards,\n{candidate_name}"
             },
             'business': {
-                'subject': f"Collaboration Opportunity with {company}",
-                'body': f"Dear {name},\n\nI'm reaching out to explore potential collaboration opportunities between us and {company}.\n\nYour expertise would be valuable in this partnership.\n\nWould you be interested in discussing this further?\n\nBest regards"
+                'subject': f"Collaboration Opportunity - {candidate_name}",
+                'body': f"Dear {recipient_name},\n\nI'm {candidate_name}, a {candidate_headline}, and I'm reaching out to explore potential collaboration opportunities with {company}.\n\nI believe there could be mutual benefit in working together, and I'd love to discuss how we might create value for both parties.\n\nWould you be open to a brief conversation?\n\nThank you for your consideration.\n\nBest regards,\n{candidate_name}"
+            },
+            'followup': {
+                'subject': f"Following Up - {position} Application",
+                'body': f"Dear {recipient_name},\n\nI hope this email finds you well. I'm following up on my application for the {position} role at {company}.\n\nI remain very interested in this opportunity and wanted to reiterate my enthusiasm for joining your team. If there's any additional information I can provide, please don't hesitate to ask.\n\nThank you for your time and consideration.\n\nBest regards,\n{candidate_name}"
             }
         }
         
@@ -210,7 +241,40 @@ class AIService:
         message_lower = message.lower()
         
         # Simple keyword-based responses
-        if any(word in message_lower for word in ['email', 'write', 'draft']):
+        if 'recruitment email' in message_lower or ('write' in message_lower and 'email' in message_lower and 'recruitment' in message_lower):
+            return """To write an effective recruitment email:
+
+**Subject Line:**
+- Keep it clear and professional
+- Example: "Exciting [Position] Opportunity at [Company]"
+
+**Opening:**
+- Personalize with the candidate's name
+- Mention how you found their profile
+
+**Body:**
+- Briefly introduce yourself and your company
+- Explain why you're reaching out (be specific about their skills/experience)
+- Describe the role and key responsibilities
+- Highlight what makes the opportunity attractive
+
+**Call-to-Action:**
+- Ask if they're open to learning more
+- Provide next steps (call, meeting, application)
+
+**Closing:**
+- Professional sign-off
+- Include contact information
+
+**Tips:**
+- Keep it concise (under 200 words)
+- Be respectful of their time
+- Show genuine interest in their background
+- Make it easy to respond
+
+Use our Email Generator tool for personalized, AI-powered recruitment emails!"""
+        
+        elif any(word in message_lower for word in ['email', 'write', 'draft']):
             return "For writing professional emails, I recommend:\n\n1. Start with a clear subject line\n2. Use a professional greeting\n3. Be concise and specific\n4. Include a clear call-to-action\n5. End with a professional signature\n\nYou can use our Email Generator tool for AI-powered email creation!"
         
         elif any(word in message_lower for word in ['profile', 'linkedin', 'analyze']):

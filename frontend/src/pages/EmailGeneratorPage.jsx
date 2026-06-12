@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { FiMail, FiRefreshCw, FiDownload, FiCopy, FiSave } from 'react-icons/fi'
-import Navbar from '../components/common/Navbar'
-import Sidebar from '../components/common/Sidebar'
+import { FiMail, FiRefreshCw, FiDownload, FiCopy, FiSave, FiSend } from 'react-icons/fi'
+import ResponsiveLayout from '../components/common/ResponsiveLayout'
 import { emailService } from '../services/emailService'
 import { profileService } from '../services/profileService'
 import LoadingSpinner from '../components/common/LoadingSpinner'
@@ -18,8 +17,11 @@ export default function EmailGeneratorPage() {
     position: '',
     recipientName: ''
   })
+  const [receiverEmail, setReceiverEmail] = useState('')
   const [generatedEmail, setGeneratedEmail] = useState(null)
+  const [emailId, setEmailId] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [sending, setSending] = useState(false)
 
   useEffect(() => {
     fetchProfiles()
@@ -54,6 +56,7 @@ export default function EmailGeneratorPage() {
       })
 
       setGeneratedEmail(response.data.email)
+      setEmailId(response.data.emailId)
       toast.success('Email generated successfully!')
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to generate email')
@@ -75,11 +78,42 @@ export default function EmailGeneratorPage() {
         metadata
       })
       setGeneratedEmail(response.data.email)
+      setEmailId(response.data.emailId)
       toast.success('Email regenerated!')
     } catch (error) {
       toast.error('Failed to regenerate email')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSendEmail = async () => {
+    if (!receiverEmail.trim()) {
+      toast.error('Please enter receiver email address')
+      return
+    }
+
+    if (!emailId) {
+      toast.error('Please generate an email first')
+      return
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(receiverEmail)) {
+      toast.error('Please enter a valid email address')
+      return
+    }
+
+    setSending(true)
+    try {
+      await emailService.sendEmail(emailId, receiverEmail)
+      toast.success(`Email sent successfully to ${receiverEmail}!`)
+      setReceiverEmail('')
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to send email')
+    } finally {
+      setSending(false)
     }
   }
 
@@ -90,12 +124,12 @@ export default function EmailGeneratorPage() {
   }
 
   const emailTypes = [
-    { value: 'recruitment', label: 'Recruitment Outreach' },
-    { value: 'internship', label: 'Internship Invitation' },
-    { value: 'networking', label: 'Professional Networking' },
-    { value: 'marketing', label: 'Marketing Campaign' },
-    { value: 'referral', label: 'Job Referral' },
-    { value: 'business', label: 'Business Collaboration' },
+    { value: 'recruitment', label: 'Job Application' },
+    { value: 'internship', label: 'Internship Application' },
+    { value: 'networking', label: 'Networking Request' },
+    { value: 'marketing', label: 'Introduction Email' },
+    { value: 'referral', label: 'Referral Request' },
+    { value: 'business', label: 'Business Inquiry' },
     { value: 'followup', label: 'Follow-up Email' }
   ]
 
@@ -106,24 +140,18 @@ export default function EmailGeneratorPage() {
   ]
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar />
-      
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar />
-        
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Email Generator
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Generate personalized AI-powered emails for professional outreach
-              </p>
-            </div>
+    <ResponsiveLayout>
+      <div className="max-w-7xl mx-auto w-full">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Email Generator
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            Generate personalized AI-powered emails to send to recruiters and companies
+          </p>
+        </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Configuration Panel */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
@@ -196,29 +224,46 @@ export default function EmailGeneratorPage() {
                   {/* Metadata */}
                   <div className="space-y-3">
                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Additional Information
+                      Target Company & Position
                     </h3>
                     <input
                       type="text"
                       className="input-field"
-                      placeholder="Company Name"
+                      placeholder="Target Company Name (e.g., Google, Microsoft)"
                       value={metadata.company}
                       onChange={(e) => setMetadata({ ...metadata, company: e.target.value })}
                     />
                     <input
                       type="text"
                       className="input-field"
-                      placeholder="Position/Role"
+                      placeholder="Target Position/Role (e.g., Senior Developer)"
                       value={metadata.position}
                       onChange={(e) => setMetadata({ ...metadata, position: e.target.value })}
                     />
                     <input
                       type="text"
                       className="input-field"
-                      placeholder="Recipient Name"
+                      placeholder="Recipient Name (e.g., Hiring Manager, John Smith)"
                       value={metadata.recipientName}
                       onChange={(e) => setMetadata({ ...metadata, recipientName: e.target.value })}
                     />
+                  </div>
+
+                  {/* Receiver Email */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Recipient Email Address
+                    </label>
+                    <input
+                      type="email"
+                      className="input-field"
+                      placeholder="hr@company.com or recruiter@company.com"
+                      value={receiverEmail}
+                      onChange={(e) => setReceiverEmail(e.target.value)}
+                    />
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      Email address of the recruiter/HR you want to contact
+                    </p>
                   </div>
 
                   {/* Custom Prompt */}
@@ -310,6 +355,32 @@ export default function EmailGeneratorPage() {
                           </p>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Send Email Button */}
+                    <div className="border-t dark:border-gray-700 pt-4">
+                      <button
+                        onClick={handleSendEmail}
+                        disabled={sending || !receiverEmail.trim()}
+                        className="w-full btn-primary flex items-center justify-center"
+                      >
+                        {sending ? (
+                          <>
+                            <LoadingSpinner />
+                            <span className="ml-2">Sending...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FiSend className="mr-2" />
+                            Send Email to Receiver
+                          </>
+                        )}
+                      </button>
+                      {!receiverEmail.trim() && (
+                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                          Enter receiver email address above to send
+                        </p>
+                      )}
                     </div>
                   </div>
                 ) : (

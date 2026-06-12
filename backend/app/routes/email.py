@@ -3,15 +3,18 @@ from app.utils.decorators import token_required
 from app.utils.validators import validate_required_fields
 from app.utils.helpers import get_timestamp
 from app.services.ai_service import AIService
+from app.services.email_service import EmailService
 from app import mongo
 from bson.objectid import ObjectId
 from datetime import datetime
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+import validators
 
 bp = Blueprint('email', __name__, url_prefix='/api/email')
 ai_service = AIService()
+email_service = EmailService()
 
 @bp.route('/generate', methods=['POST'])
 @token_required
@@ -325,6 +328,69 @@ def get_templates():
         return jsonify({
             'success': True,
             'templates': templates_list
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@bp.route('/send/<email_id>', methods=['POST'])
+@token_required
+def send_email(email_id):
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        valid, message = validate_required_fields(data, ['receiverEmail'])
+        if not valid:
+            return jsonify({'success': False, 'error': message}), 400
+        
+        receiver_email = data['receiverEmail'].strip()
+        
+        # Validate email format
+        if not validators.email(receiver_email):
+            return jsonify({'success': False, 'error': 'Invalid email address'}), 400
+        
+        # Get email from database
+        email = mongo.db.generated_emails.find_one({
+            '_id': ObjectId(email_id),
+            'userId': ObjectId(request.user_id)
+        })
+        
+        if not email:
+            return jsonify({'success': False, 'error': 'Email not found'}), 404
+        
+        subject = email.get('subject', '')
+        body = email.get('body', '')
+        
+        # Get user info for sender name
+        user = mongo.db.users.find_one({'_id': ObjectId(request.user_id)})
+        from_name = user.get('name', 'LinkedIn AI Platform')
+        
+        # Send email
+        result = email_service.send_generated_email(
+            to_email=receiver_email,
+            subject=subject,
+            body=body,
+            from_name=from_name
+        )
+        
+        if not result.get('success'):
+            return jsonify(result), 500
+        
+        # Mark email as sent
+        mongo.db.generated_emails.update_one(
+            {'_id': ObjectId(email_id)},
+            {'$set': {
+                'isSent': True,
+                'sentTo': receiver_email,
+                'sentAt': get_timestamp(),
+                'updatedAt': get_timestamp()
+            }}
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': f'Email sent successfully to {receiver_email}'
         }), 200
         
     except Exception as e:
