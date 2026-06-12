@@ -391,8 +391,9 @@ export default function EmailGeneratorPage() {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
           </div>
-        </div>
-      </ResponsiveLayout>
-    )
-  }
+        </ResponsiveLayout>
+      )
+    }
