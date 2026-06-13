@@ -21,11 +21,10 @@ services:
       - key: FRONTEND_URL
         sync: false
 
-  # Frontend (Optional - if deploying static files)
-  - type: web
+  # Frontend - Static Site
+  - type: static
     name: linkedin-analyzer-frontend
-    runtime: static
-    buildCommand: cd frontend && npm ci && npm run build
+    buildCommand: bash build-frontend.sh
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL

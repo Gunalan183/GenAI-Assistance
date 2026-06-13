@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: linkedin-analyzer-frontend
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run preview
+    env: static
+    envVars:
+      - key: VITE_API_URL
+        value: https://genai-assistance-1.onrender.com/api
+      - key: NODE_ENV
+        value: production
