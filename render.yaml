@@ -25,8 +25,8 @@ services:
   - type: web
     name: linkedin-analyzer-frontend
     runtime: static
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
-        sync: false
+        value: https://genai-assistance-1.onrender.com/api
