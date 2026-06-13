@@ -23,7 +23,7 @@ const Navbar = ({ onMenuClick, isMobileMenuOpen }) => {
 
           <div className="flex items-center">
             <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate">
-              LinkedIn AI Platform
+              CarrierGPT
             </h1>
           </div>
 

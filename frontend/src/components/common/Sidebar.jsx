@@ -72,7 +72,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               <span className="text-white font-bold text-xl">LA</span>
             </div>
             <div>
-              <h2 className="font-bold text-gray-900 dark:text-white">LinkedIn AI</h2>
+              <h2 className="font-bold text-gray-900 dark:text-white">CarrierGPT</h2>
               <p className="text-xs text-gray-500 dark:text-gray-400">AI Platform</p>
             </div>
           </Link>
@@ -105,7 +105,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Footer */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            <p>© 2024 LinkedIn AI</p>
+            <p>© 2024 CarrierGPT</p>
             <p className="mt-1">Version 1.0.0</p>
           </div>
         </div>

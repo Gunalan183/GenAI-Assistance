@@ -14,4 +14,4 @@ export const TONE_OPTIONS = [
   { value: 'formal', label: 'Formal' }
 ]
 
-export const APP_NAME = import.meta.env.VITE_APP_NAME || 'LinkedIn AI Outreach'
+export const APP_NAME = import.meta.env.VITE_APP_NAME || 'CarrierGPT'

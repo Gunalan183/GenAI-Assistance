@@ -1,0 +1,29 @@
+# Optimized requirements for Render deployment
+# Removes unused heavy dependencies (spacy, nltk, scikit-learn)
+
+# Core Flask Dependencies
+Flask==3.0.0
+Flask-CORS==4.0.0
+Flask-PyMongo==2.3.0
+pymongo==4.6.1
+
+# Authentication
+PyJWT==2.8.0
+bcrypt==4.1.2
+
+# Environment
+python-dotenv==1.0.0
+
+# AI/ML Services (lightweight - only what we use)
+google-generativeai==0.8.6
+openai==1.12.0
+
+# Validation
+validators==0.35.0
+email-validator==2.3.0
+
+# PDF Generation
+reportlab==4.0.9
+
+# Production Server (REQUIRED for Render)
+gunicorn==21.2.0

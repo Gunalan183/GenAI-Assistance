@@ -1,0 +1,32 @@
+services:
+  # Backend API
+  - type: web
+    name: linkedin-analyzer-backend
+    runtime: python
+    buildCommand: pip install -r backend/requirements-render.txt
+    startCommand: cd backend && gunicorn run:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+  # Frontend (Optional - if deploying static files)
+  - type: web
+    name: linkedin-analyzer-frontend
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false

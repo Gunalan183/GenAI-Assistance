@@ -7,7 +7,7 @@ const LandingPage = () => {
     {
       icon: FaLinkedin,
       title: 'AI Profile Analysis',
-      description: 'Extract and analyze LinkedIn profiles with advanced NLP and AI technology.'
+      description: 'Extract and analyze professional profiles with advanced NLP and AI technology.'
     },
     {
       icon: FaEnvelope,
@@ -33,12 +33,12 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 py-20 text-center">
         <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-          Transform LinkedIn Profiles into
+          Transform Professional Profiles into
           <span className="text-primary block mt-2">Personalized Outreach</span>
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-          AI-powered platform that analyzes LinkedIn profiles and generates highly personalized
-          professional emails for recruitment, networking, and business development.
+          AI-powered platform that analyzes professional profiles and generates highly personalized
+          emails for recruitment, networking, and business development.
         </p>
         <div className="flex gap-4 justify-center">
           <Link
@@ -102,7 +102,7 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; 2026 LinkedIn AI Outreach. All rights reserved.</p>
+          <p>&copy; 2026 CarrierGPT. All rights reserved.</p>
         </div>
       </footer>
     </div>

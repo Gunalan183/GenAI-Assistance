@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { FiLink, FiUser, FiBriefcase, FiAward, FiBook } from 'react-icons/fi'
+import { FiLink, FiUser, FiBriefcase, FiAward, FiBook, FiUpload, FiFile, FiDownload } from 'react-icons/fi'
 import Navbar from '../components/common/Navbar'
 import Sidebar from '../components/common/Sidebar'
 import { profileService } from '../services/profileService'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import { parseLinkedInCSV, validateCSVFile, downloadCSVTemplate } from '../utils/csvParser'
 
 export default function ProfileAnalysisPage() {
   const [profileUrl, setProfileUrl] = useState('')
@@ -18,6 +19,8 @@ export default function ProfileAnalysisPage() {
   })
   const [analysis, setAnalysis] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState(null)
+  const [inputMode, setInputMode] = useState('manual') // 'manual' or 'csv'
 
   const handleAddExperience = () => {
     setProfileData({
@@ -35,6 +38,56 @@ export default function ProfileAnalysisPage() {
     const newExperience = [...profileData.experience]
     newExperience[index][field] = value
     setProfileData({ ...profileData, experience: newExperience })
+  }
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Validate file
+    const validation = validateCSVFile(file)
+    if (!validation.valid) {
+      toast.error(validation.error)
+      return
+    }
+
+    setUploadedFile(file)
+    setLoading(true)
+
+    try {
+      const text = await file.text()
+      const parsedData = parseLinkedInCSV(text)
+      
+      if (parsedData && parsedData.fullName) {
+        // Update form with parsed data
+        setProfileData({
+          fullName: parsedData.fullName,
+          headline: parsedData.headline,
+          skills: parsedData.skills,
+          experience: parsedData.experience,
+          education: parsedData.education,
+          certifications: parsedData.certifications
+        })
+        
+        // Set profile URL if available in metadata
+        if (parsedData._metadata?.profileUrl) {
+          setProfileUrl(parsedData._metadata.profileUrl)
+        }
+        
+        toast.success('✓ CSV file parsed successfully! Review and edit the data below.')
+      } else {
+        toast.error('Failed to parse CSV file. Please check the format.')
+      }
+    } catch (error) {
+      toast.error('Error reading CSV file: ' + error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDownloadTemplate = () => {
+    downloadCSVTemplate()
+    toast.success('CSV template downloaded!')
   }
 
   const handleAnalyze = async (e) => {
@@ -75,7 +128,7 @@ export default function ProfileAnalysisPage() {
                 Profile Analysis
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Analyze LinkedIn profiles to generate AI-powered insights
+                Analyze professional profiles to generate AI-powered insights
               </p>
             </div>
 
@@ -86,12 +139,119 @@ export default function ProfileAnalysisPage() {
                   Profile Information
                 </h2>
 
+                {/* Input Mode Toggle */}
+                <div className="mb-6 flex gap-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                  <button
+                    type="button"
+                    onClick={() => setInputMode('manual')}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                      inputMode === 'manual'
+                        ? 'bg-white dark:bg-gray-800 text-primary shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                    }`}
+                  >
+                    Manual Entry
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputMode('csv')}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                      inputMode === 'csv'
+                        ? 'bg-white dark:bg-gray-800 text-primary shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                    }`}
+                  >
+                    Upload CSV
+                  </button>
+                </div>
+
+                {/* CSV Upload Section */}
+                {inputMode === 'csv' && (
+                  <div className="mb-6">
+                    {/* Download Template Button */}
+                    <div className="mb-4 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={handleDownloadTemplate}
+                        className="text-sm text-primary hover:text-primary-dark flex items-center gap-2"
+                      >
+                        <FiDownload />
+                        Download CSV Template
+                      </button>
+                    </div>
+
+                    {/* Upload Area */}
+                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary transition-colors">
+                      <input
+                        type="file"
+                        id="csv-upload"
+                        accept=".csv"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        disabled={loading}
+                      />
+                      <label htmlFor="csv-upload" className="cursor-pointer">
+                        {loading ? (
+                          <LoadingSpinner />
+                        ) : (
+                          <>
+                            <FiUpload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-600 dark:text-gray-400 mb-2">
+                              {uploadedFile ? (
+                                <span className="flex items-center justify-center gap-2 text-green-600 dark:text-green-400">
+                                  <FiFile />
+                                  {uploadedFile.name}
+                                </span>
+                              ) : (
+                                <>
+                                  <span className="text-primary font-medium">Click to upload</span> or drag and drop
+                                </>
+                              )}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-500">
+                              LinkedIn CSV export file (Max 10MB)
+                            </p>
+                          </>
+                        )}
+                      </label>
+                    </div>
+
+                    {/* CSV Format Help */}
+                    <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <h4 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2">
+                        <FiFile />
+                        Expected CSV Format:
+                      </h4>
+                      <p className="text-xs text-blue-700 dark:text-blue-400 mb-2">
+                        Your CSV should include columns like:
+                      </p>
+                      <code className="text-xs bg-white dark:bg-gray-800 p-2 rounded block overflow-x-auto text-gray-800 dark:text-gray-200">
+                        First Name, Last Name, Headline, Skills, Company, Position, School, Degree
+                      </code>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-3">
+                        💡 <strong>Tip:</strong> Download the template above or export your LinkedIn profile/connections data
+                      </p>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                        📝 After upload, review and edit the parsed data in the form below
+                      </p>
+                    </div>
+
+                    {uploadedFile && (
+                      <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                        <p className="text-sm text-green-700 dark:text-green-400">
+                          ✓ File uploaded successfully! The data has been populated in the form below. You can review and edit it before analyzing.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <form onSubmit={handleAnalyze} className="space-y-4">
-                  {/* LinkedIn URL */}
+                  {/* Profile URL */}
                   <div>
                     <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       <FiLink className="mr-2" />
-                      LinkedIn Profile URL
+                      Professional Profile URL
                     </label>
                     <input
                       type="url"

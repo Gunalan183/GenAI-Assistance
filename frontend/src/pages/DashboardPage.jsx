@@ -179,7 +179,7 @@ export default function DashboardPage() {
                     Analyze Profile
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Analyze a new LinkedIn profile
+                    Analyze a new professional profile
                   </p>
                   <span className="text-sm text-primary group-hover:underline flex items-center">
                     Get started <FiArrowRight className="ml-1" />

@@ -1,38 +1,38 @@
-# Complete Render Deployment Guide
+# Render Deployment Guide
 
-Deploy your LinkedIn AI Outreach platform to Render in production.
+## Issue Fixed: Build Failure with spacy/blis
 
-## 🎯 Overview
+**Problem:** Render deployment was failing due to building `spacy`, `nltk`, and `scikit-learn` from source, which requires significant memory and compilation time.
 
-This guide covers:
-1. MongoDB Atlas setup
-2. Backend deployment to Render (Web Service)
-3. Frontend deployment to Render (Static Site)
-4. Environment configuration
-5. Testing and verification
+**Solution:** Created `requirements-render.txt` that removes unused heavy NLP dependencies.
 
----
+## Quick Fix Steps
 
-## 📋 Prerequisites
+### Option 1: Use render.yaml (Recommended)
+1. Push the new `render.yaml` and `backend/requirements-render.txt` to your repository
+2. In Render dashboard, your service will auto-detect and use the configuration
+3. Redeploy
 
-- [x] GitHub account with repository
-- [x] Render account (sign up at https://render.com)
-- [x] MongoDB Atlas account (sign up at https://mongodb.com/cloud/atlas)
-- [x] OpenAI or Gemini API key
+### Option 2: Manual Configuration
+1. In your Render dashboard, go to your web service settings
+2. Change the **Build Command** to:
+   ```bash
+   pip install -r backend/requirements-render.txt
+   ```
+3. Ensure **Start Command** is:
+   ```bash
+   cd backend && gunicorn run:app
+   ```
+4. Click "Save Changes" and redeploy
 
----
+## Environment Variables
 
-## Part 1: MongoDB Atlas Setup
+Set these in your Render dashboard (Environment section):
 
-### Step 1.1: Create MongoDB Cluster
-
-1. Go to https://www.mongodb.com/cloud/atlas
-2. Sign in or create account
-3. Click "Build a Database"
-4. Choose **FREE** tier (M0)
-5. Select cloud provider and region (closest to you)
-6. Name your cluster: `linkedin-ai-cluster`
-7. Click "Create"
+### Required
+- `MONGODB_URI` - Your MongoDB connection string
+- `JWT_SECRET_KEY` - Random secret key for JWT tokens
+- `FRONTEND_URL` - Your frontend URL (e.g., `https://your-a
 
 ### Step 1.2: Configure Database Access
 

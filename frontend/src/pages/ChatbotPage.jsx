@@ -74,7 +74,7 @@ export default function ChatbotPage() {
 
   const quickPrompts = [
     'How do I write a good recruitment email?',
-    'What makes a strong LinkedIn profile?',
+    'What makes a strong professional profile?',
     'Tips for networking emails',
     'Best practices for follow-up emails'
   ]
