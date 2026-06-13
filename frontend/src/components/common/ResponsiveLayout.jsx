@@ -6,15 +6,18 @@ const ResponsiveLayout = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const toggleMobileMenu = () => {
+    console.log('Toggle menu clicked, current state:', isMobileMenuOpen)
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
   const closeMobileMenu = () => {
+    console.log('Close menu called')
     setIsMobileMenuOpen(false)
   }
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
+    console.log('Mobile menu state changed:', isMobileMenuOpen)
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden'
     } else {
