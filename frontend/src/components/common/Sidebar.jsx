@@ -29,37 +29,43 @@ const Sidebar = ({ isOpen, onClose }) => {
   }
 
   const handleLinkClick = () => {
-    if (window.innerWidth < 1024) {
-      onClose()
-    }
+    // Always close on mobile when clicking a link
+    onClose()
   }
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onClose}
-        ></div>
-      )}
+      {/* Mobile Overlay - Higher z-index */}
+      <div
+        className={`fixed inset-0 bg-black transition-opacity duration-300 lg:hidden ${
+          isOpen ? 'opacity-50 z-40' : 'opacity-0 pointer-events-none -z-10'
+        }`}
+        onClick={onClose}
+        aria-hidden="true"
+      ></div>
 
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 z-50 
-          w-64 bg-white dark:bg-gray-800 
+          fixed top-0 left-0
+          lg:sticky lg:top-0
+          w-64 h-screen
+          bg-white dark:bg-gray-800 
           border-r border-gray-200 dark:border-gray-700 
-          h-screen flex flex-col
-          transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          flex flex-col
+          transition-transform duration-300 ease-in-out
+          overflow-y-auto
+          ${isOpen ? 'translate-x-0 z-50' : '-translate-x-full z-50 lg:translate-x-0'}
         `}
+        aria-label="Sidebar navigation"
       >
         {/* Mobile Close Button */}
-        <div className="lg:hidden flex justify-end p-4">
+        <div className="lg:hidden flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="font-bold text-gray-900 dark:text-white">Menu</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            aria-label="Close menu"
           >
             <FiX className="w-6 h-6" />
           </button>

@@ -285,7 +285,17 @@ export default function EmailGeneratorPage() {
                     disabled={loading}
                     className="w-full btn-primary flex items-center justify-center"
                   >
-                    {loading ? <LoadingSpinner /> : 'Generate Email'}
+                    {loading ? (
+                      <>
+                        <LoadingSpinner size="sm" inline />
+                        <span className="ml-2">Generating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiMail className="mr-2" />
+                        Generate Email
+                      </>
+                    )}
                   </button>
                 </form>
               </div>
@@ -333,27 +343,8 @@ export default function EmailGeneratorPage() {
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Email Body
                       </label>
-                      <div className="input-field bg-gray-50 dark:bg-gray-700 min-h-[300px] whitespace-pre-wrap">
+                      <div className="input-field bg-gray-50 dark:bg-gray-700 min-h-[300px] whitespace-pre-wrap overflow-y-auto max-h-[500px]">
                         {generatedEmail.body}
-                      </div>
-                    </div>
-
-                    {/* Email Preview */}
-                    <div className="border-t dark:border-gray-700 pt-4">
-                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        Email Preview
-                      </h3>
-                      <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <div className="mb-4">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                            <strong>Subject:</strong> {generatedEmail.subject}
-                          </p>
-                        </div>
-                        <div className="prose dark:prose-invert max-w-none">
-                          <p className="whitespace-pre-wrap text-gray-800 dark:text-gray-200">
-                            {generatedEmail.body}
-                          </p>
-                        </div>
                       </div>
                     </div>
 
@@ -366,7 +357,7 @@ export default function EmailGeneratorPage() {
                       >
                         {sending ? (
                           <>
-                            <LoadingSpinner />
+                            <LoadingSpinner size="sm" inline />
                             <span className="ml-2">Sending...</span>
                           </>
                         ) : (

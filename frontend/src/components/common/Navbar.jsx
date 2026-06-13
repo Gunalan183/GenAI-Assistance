@@ -10,13 +10,15 @@ const Navbar = ({ onMenuClick, isMobileMenuOpen }) => {
   const [showUserMenu, setShowUserMenu] = useState(false)
 
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
       <div className="px-4 sm:px-6">
         <div className="flex justify-between items-center h-16">
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Always visible on mobile */}
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Toggle menu"
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
           </button>
