@@ -1,0 +1,11 @@
+campaign_name,recipient_name,recipient_email,subject,status,sent_date,opened,clicked
+Q1 Outreach,John Doe,john.doe@example.com,Exciting Partnership Opportunity,sent,2024-01-15,yes,yes
+Product Launch,Sarah Smith,sarah.smith@example.com,Introducing Our New AI Platform,sent,2024-01-16,yes,no
+Follow-up Campaign,Mike Chen,mike.chen@example.com,Quick Follow-up on Our Discussion,sent,2024-01-17,no,no
+Networking,Emily Jones,emily.jones@example.com,Let's Connect at TechConf 2024,sent,2024-01-18,yes,yes
+Demo Request,David Lee,david.lee@example.com,Schedule Your Personalized Demo,sent,2024-01-20,yes,no
+Cold Outreach,Lisa Wang,lisa.wang@example.com,Transform Your Design Process,draft,,,no,no
+Re-engagement,James Brown,james.brown@example.com,We Miss You - Special Offer Inside,sent,2024-01-22,no,no
+Partnership,Maria Gonzalez,maria.gonzalez@example.com,Collaboration Opportunity,sent,2024-01-23,yes,yes
+Event Invitation,Robert Wilson,robert.wilson@example.com,VIP Invitation: Executive Summit,sent,2024-01-25,yes,no
+Content Share,Jennifer Taylor,jennifer.taylor@example.com,Thought Leadership Article You'll Love,sent,2024-01-26,no,no

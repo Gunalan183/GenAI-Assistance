@@ -1,0 +1,16 @@
+date,contact_name,company,message_type,response_received,response_time_hours,sentiment,next_action,revenue_potential
+2024-01-15,John Doe,Tech Corp,connection_request,yes,24,positive,schedule_call,$50000
+2024-01-16,Sarah Smith,Innovation Labs,intro_message,yes,48,neutral,send_case_study,$75000
+2024-01-17,Mike Chen,DataTech Inc,follow_up,no,,,retry_in_1_week,$30000
+2024-01-18,Emily Jones,Brand Studio,cold_email,yes,12,very_positive,send_proposal,$100000
+2024-01-19,David Lee,Cloud Solutions,connection_request,yes,36,positive,intro_message,$40000
+2024-01-20,Lisa Wang,Design Co,intro_message,no,,,mark_as_cold,$20000
+2024-01-21,James Brown,Enterprise Sales,referral_intro,yes,6,very_positive,schedule_demo,$150000
+2024-01-22,Maria Gonzalez,PeopleFirst Corp,cold_email,yes,72,neutral,nurture_sequence,$35000
+2024-01-23,Robert Wilson,FinTech Solutions,follow_up,no,,,retry_different_approach,$60000
+2024-01-24,Jennifer Taylor,Media House,connection_request,yes,18,positive,send_content,$25000
+2024-01-25,Alex Thompson,TechStartup Inc,intro_message,yes,8,very_positive,send_contract,$85000
+2024-01-26,Priya Patel,Innovate Solutions,demo_followup,yes,4,very_positive,close_deal,$120000
+2024-01-27,Marcus Johnson,Global Corp,cold_email,no,,,try_phone_call,$90000
+2024-01-28,Sophie Chen,Design Hub,connection_request,yes,48,neutral,share_portfolio,$30000
+2024-01-29,Tom Anderson,RetailPlus,webinar_followup,yes,12,positive,schedule_meeting,$70000

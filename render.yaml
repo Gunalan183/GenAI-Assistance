@@ -4,7 +4,7 @@ services:
     name: linkedin-analyzer-backend
     runtime: python
     buildCommand: pip install -r backend/requirements-render.txt
-    startCommand: cd backend && gunicorn run:app
+    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT run:app
     envVars:
       - key: FLASK_ENV
         value: production

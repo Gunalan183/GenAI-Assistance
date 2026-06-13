@@ -1,0 +1,13 @@
+lead_id,name,email,company,job_title,phone,linkedin_url,lead_source,lead_score,status,notes
+L001,Alex Thompson,alex.thompson@techstartup.com,TechStartup Inc,CTO,+1-555-0101,https://linkedin.com/in/alexthompson,website,85,qualified,"Interested in enterprise plan, scheduled demo for next week"
+L002,Priya Patel,priya.patel@innovate.com,Innovate Solutions,VP Engineering,+1-555-0102,https://linkedin.com/in/priyapatel,referral,92,hot,"Ready to purchase, needs pricing for 50 users"
+L003,Marcus Johnson,marcus.j@globalcorp.com,Global Corp,IT Director,+1-555-0103,https://linkedin.com/in/marcusjohnson,conference,78,qualified,"Met at TechConf, follow up in 2 weeks"
+L004,Sophie Chen,sophie.chen@designhub.com,Design Hub,Creative Director,+1-555-0104,https://linkedin.com/in/sophiechen,linkedin,65,nurture,"Downloaded whitepaper, early stage interest"
+L005,Tom Anderson,tom.anderson@retailplus.com,RetailPlus,Head of Digital,+1-555-0105,https://linkedin.com/in/tomanderson,webinar,88,hot,"Attended product demo, evaluating competitors"
+L006,Nina Rodriguez,nina.r@healthtech.com,HealthTech Solutions,Product Manager,+1-555-0106,https://linkedin.com/in/ninarodriguez,cold_email,45,cold,"No response yet, will retry in 1 week"
+L007,Kevin O'Brien,kevin.obrien@financegroup.com,Finance Group,CFO,+1-555-0107,https://linkedin.com/in/kevinobrien,partner,95,hot,"Urgently needs solution, budget approved"
+L008,Yuki Tanaka,yuki.tanaka@automative.jp,Automotive Japan,Engineering Lead,+81-3-1234-5678,https://linkedin.com/in/yukitanaka,trade_show,70,qualified,"International prospect, interested in Q2 rollout"
+L009,Rachel Green,rachel.green@edtech.com,EdTech Innovations,CEO,+1-555-0109,https://linkedin.com/in/rachelgreen,referral,82,qualified,"Referred by existing customer, high potential"
+L010,Daniel Kim,daniel.kim@aicompany.com,AI Company,Machine Learning Engineer,+1-555-0110,https://linkedin.com/in/danielkim,website,55,nurture,"Technical evaluation ongoing, needs more info"
+L011,Olivia Martinez,olivia.m@consulting.com,Consulting Partners,Senior Consultant,+1-555-0111,https://linkedin.com/in/oliviamartinez,linkedin,60,cold,"Connected on LinkedIn, no direct conversation yet"
+L012,Hassan Ahmed,hassan.ahmed@logistics.ae,Logistics Dubai,Operations Director,+971-4-123-4567,https://linkedin.com/in/hassanahmed,conference,75,qualified,"Looking for regional partnership opportunities"

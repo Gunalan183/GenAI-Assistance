@@ -1,0 +1,13 @@
+user_id,username,email,signup_date,last_login,profiles_analyzed,emails_generated,emails_sent,total_connections,subscription_plan,monthly_spend
+U001,johndoe,johndoe@email.com,2023-12-01,2024-01-29,45,120,98,500,professional,$49
+U002,sarahm,sarah.m@email.com,2023-11-15,2024-01-28,78,245,220,1200,enterprise,$199
+U003,mikec,mike.c@email.com,2024-01-05,2024-01-29,12,35,28,150,free,$0
+U004,emilyj,emily.j@email.com,2023-10-20,2024-01-27,156,580,542,2500,enterprise,$199
+U005,davidl,david.l@email.com,2024-01-10,2024-01-29,8,22,18,80,free,$0
+U006,lisaw,lisa.w@email.com,2023-12-15,2024-01-28,34,95,87,450,professional,$49
+U007,jamesb,james.b@email.com,2023-09-01,2024-01-29,203,720,688,3500,enterprise,$199
+U008,mariag,maria.g@email.com,2024-01-01,2024-01-26,15,42,35,200,professional,$49
+U009,robertw,robert.w@email.com,2023-11-01,2024-01-29,67,198,175,800,professional,$49
+U010,jennifert,jennifer.t@email.com,2023-12-20,2024-01-28,28,82,76,350,professional,$49
+U011,alexth,alex.th@email.com,2024-01-15,2024-01-29,5,12,10,50,free,$0
+U012,priyap,priya.p@email.com,2023-08-15,2024-01-29,298,1240,1180,5000,enterprise,$199
